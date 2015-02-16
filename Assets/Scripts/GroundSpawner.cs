@@ -92,10 +92,10 @@ public class GroundSpawner : MonoBehaviour {
 
     int _GetRandomBlock(int last_block) {
         int block = _Random(0, groundBlocks.Count + 1);
-		if (block > groundBlocks.Count)
+		if (block >= groundBlocks.Count)
         {
             block = last_block;
         }
-        return 0;
+        return block;
     }
 }

@@ -3,6 +3,11 @@ using System.Collections;
 
 public class PlayerControl : Mob
 {
+    [Tooltip("Name for Horizontal input axis")]
+    public string HorizontalInput = "Horizontal";
+    [Tooltip("Name for Vertical input axis")]
+    public string VerticalInput = "Vertical";
+    
 
     void Awake()
     {
@@ -11,8 +16,8 @@ public class PlayerControl : Mob
     void Update()
     {
         // Retrieve axis information
-        float inputX = Input.GetAxis("Horizontal");
-        float inputY = Input.GetAxis("Vertical");
+        float inputX = Input.GetAxis(HorizontalInput);
+        float inputY = Input.GetAxis(VerticalInput);
 
         UpdateMovement(inputX, inputY);
     }

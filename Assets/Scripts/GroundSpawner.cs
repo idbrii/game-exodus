@@ -26,13 +26,13 @@ public class GroundSpawner : MonoBehaviour {
         delta -= spriteOverlap;
 
         Vector3 grid_dimensions = new Vector3(width, height, 0);
-        int last_block = 0;
         var start_pos = grid_dimensions / 2.0f;
         start_pos *= -1.0f;
         start_pos = Vector3.Scale(start_pos, delta);
 
         var last_pos = start_pos;
 
+        int last_block = 0;
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 last_block = _GetRandomBlock(last_block);
@@ -46,36 +46,40 @@ public class GroundSpawner : MonoBehaviour {
             last_pos.x = start_pos.x;
         }
 
-        start_pos.z = -1.0f;
+        var total_bounds = new Bounds(Vector3.zero, Vector3.zero);
+        var renderers = GetComponentsInChildren(typeof(Renderer));
+        foreach (var component in renderers) {
+            var render = (Renderer)component;
+            total_bounds.Encapsulate(render.bounds);
+        }
 
-        var extent = grid_dimensions;
-        extent.x -= 1;
-        extent.y -= 1;
-        extent /= 2.0f;
-        extent = Vector3.Scale(delta, extent);
-        var half_extent = extent / 4.0f;
-        extent.z = -1.0f;
-        var pos = extent;
-        pos.x = half_extent.x;
-        pos.y += delta.y * 1.5f;
-        _SpawnChild(boundary, pos);
-        pos = extent;
-        pos.x += delta.x * 1.5f;
-        pos.y = half_extent.y;
-        _SpawnChild(boundary, pos);
-        pos = start_pos;
-        pos.y = half_extent.y;
-        _SpawnChild(boundary, pos);
-        pos = start_pos;
-        pos.x = half_extent.x;
-        pos.y -= delta.y * 1.5f;
-        _SpawnChild(boundary, pos);
+        var size = new Vector2(delta.x, total_bounds.size.y);
+        var pos = total_bounds.min;
+        pos.y += total_bounds.size.y / 2.0f;
+        _SpawnBoundary(pos, size);
+        pos.x += total_bounds.size.x;
+        _SpawnBoundary(pos, size);
+
+        size = new Vector2(total_bounds.size.x, delta.y);
+        pos = total_bounds.min;
+        pos.x += total_bounds.size.x / 2.0f;
+        _SpawnBoundary(pos, size);
+        pos.y += total_bounds.size.y;
+        _SpawnBoundary(pos, size);
+    }
+
+    Transform _SpawnBoundary(Vector3 pos, Vector2 size) {
+        var child = _SpawnChild(boundary, pos);
+        var collider = child.GetComponent<BoxCollider2D>();
+        collider.size = size;
+
+        return child;
     }
 
     Transform _SpawnChild(Transform kind, Vector3 pos) {
-        var b = (Transform)Instantiate(kind, pos, Quaternion.identity);
-        b.parent = transform;
-        return b;
+        var child = (Transform)Instantiate(kind, pos, Quaternion.identity);
+        child.parent = transform;
+        return child;
     }
 
     int _Random(int min, int max) {

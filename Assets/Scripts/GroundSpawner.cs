@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GroundSpawner : MonoBehaviour {
+    [Tooltip("Boundary blocker object.")]
+    public Transform boundary;
     [Tooltip("List of possible ground tiles.")]
     public List<Transform> groundBlocks;
     [Tooltip("Number of blocks high.")]
@@ -20,15 +22,16 @@ public class GroundSpawner : MonoBehaviour {
 
         Transform default_block = groundBlocks[0];
         var delta = default_block.renderer.bounds.size;
+        delta.z = 0;
         delta -= spriteOverlap;
 
+        Vector3 grid_dimensions = new Vector3(width, height, 0);
         int last_block = 0;
-        var start_pos = new Vector3(width / 2.0f, height / 2.0f, 0);
+        var start_pos = grid_dimensions / 2.0f;
         start_pos *= -1.0f;
         start_pos = Vector3.Scale(start_pos, delta);
 
         var last_pos = start_pos;
-
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
@@ -43,6 +46,30 @@ public class GroundSpawner : MonoBehaviour {
             last_pos.x = start_pos.x;
         }
 
+        start_pos.z = -1.0f;
+
+        var extent = grid_dimensions;
+        extent.x -= 1;
+        extent.y -= 1;
+        extent /= 2.0f;
+        extent = Vector3.Scale(delta, extent);
+        var half_extent = extent / 4.0f;
+        extent.z = -1.0f;
+        var pos = extent;
+        pos.x = half_extent.x;
+        pos.y += delta.y * 1.5f;
+        _SpawnChild(boundary, pos);
+        pos = extent;
+        pos.x += delta.x * 1.5f;
+        pos.y = half_extent.y;
+        _SpawnChild(boundary, pos);
+        pos = start_pos;
+        pos.y = half_extent.y;
+        _SpawnChild(boundary, pos);
+        pos = start_pos;
+        pos.x = half_extent.x;
+        pos.y -= delta.y * 1.5f;
+        _SpawnChild(boundary, pos);
     }
 
     Transform _SpawnChild(Transform kind, Vector3 pos) {

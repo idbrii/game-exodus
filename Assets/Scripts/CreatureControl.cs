@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class EnemyControl : Mob
+public class CreatureControl : Mob
 {
     [Tooltip("How much time to stop trying to move.")]
     public float movementReduceTime = 1;

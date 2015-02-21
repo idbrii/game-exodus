@@ -10,7 +10,7 @@ public class Spawner : MonoBehaviour {
     [Tooltip("How big of a circular area to spawn.")]
     public float spawnRadius = 5.0f;
     [Tooltip("Set this object as the parent of new objects.")]
-    public bool shouldParentNewObjectsToMe = true;
+    public Transform desiredParent;
     [Tooltip("Instead of random spacing, force to spawnRadius from Spawner.")]
     public bool forceToMaxDistance = false;
     
@@ -24,7 +24,7 @@ public class Spawner : MonoBehaviour {
     }
 
 
-	void Start() {
+    void Start() {
         SpawnObjects();
     }
 
@@ -35,12 +35,9 @@ public class Spawner : MonoBehaviour {
             Vector3 offset = GetSpawnOffset();
             Vector3 pos = transform.position + offset;
             Transform obj = (Transform) Instantiate(typeToSpawn, pos, rot);
-            if (shouldParentNewObjectsToMe) {
-                obj.parent = transform;
-            }
+            obj.parent = desiredParent;
         }
-	
-	}
+    }
 
     float GetSpawnDistance() {
         if (forceToMaxDistance) {

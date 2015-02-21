@@ -14,12 +14,14 @@ public class GroundSpawner : MonoBehaviour {
     [Tooltip("The amount to overlap sprites.")]
     public Vector3 spriteOverlap;
     
+    private Randomizer rand;
     
     
-	// Use this for initialization
-    void Start() {
-        Random.seed = 0;
+    void Awake() {
+        rand = new Randomizer();
+    }
 
+    void Start() {
         Transform default_block = groundBlocks[0];
         var delta = default_block.renderer.bounds.size;
         delta.z = 0;
@@ -82,20 +84,8 @@ public class GroundSpawner : MonoBehaviour {
         return child;
     }
 
-    int _Random(int min, int max) {
-        if (max == min)
-        {
-            return min;
-        }
-
-        const float RAND_MAX = 1.0f;
-        float scale = RAND_MAX / (float)(max - min);
-        float r = min + (Random.value / scale);
-        return (int)Mathf.Round(r);
-    }
-
     int _GetRandomBlock(int last_block) {
-        int block = _Random(0, groundBlocks.Count + 1);
+        int block = rand.Range(0, groundBlocks.Count + 1);
 		if (block >= groundBlocks.Count)
         {
             block = last_block;

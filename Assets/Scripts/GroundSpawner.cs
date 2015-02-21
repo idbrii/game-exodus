@@ -86,7 +86,7 @@ public class GroundSpawner : MonoBehaviour {
 
     int _GetRandomBlock(int last_block) {
         int block = rand.Range(0, groundBlocks.Count + 1);
-		if (block >= groundBlocks.Count)
+        if (block >= groundBlocks.Count)
         {
             block = last_block;
         }

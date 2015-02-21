@@ -5,42 +5,23 @@ using System.Collections.Generic;
 public class GroundSpawner : MonoBehaviour {
     [Tooltip("Boundary blocker object.")]
     public Transform boundary;
-    [Tooltip("Number of blocks high.")]
-    public int height;
-    [Tooltip("Number of blocks across.")]
-    public int width;
-    [Tooltip("The amount to overlap sprites.")]
-    public Vector3 spriteOverlap;
     
+    private GridPositionStrategy location;
     private InstanceStrategy typeToSpawn;
     
     
     void Awake() {
+        location = gameObject.GetComponent<GridPositionStrategy>();
         typeToSpawn = gameObject.GetComponent<InstanceStrategy>();
     }
 
     void Start() {
         Transform default_block = typeToSpawn.NextInstanceType();
-        var delta = default_block.renderer.bounds.size;
-        delta.z = 0;
-        delta -= spriteOverlap;
+        location.Initialize(default_block);
+        var delta = location.Delta;
 
-        Vector3 grid_dimensions = new Vector3(width, height, 0);
-        var start_pos = grid_dimensions / 2.0f;
-        start_pos *= -1.0f;
-        start_pos = Vector3.Scale(start_pos, delta);
-
-        var last_pos = start_pos;
-
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                Transform block = typeToSpawn.NextInstanceType();
-                last_pos.x += delta.x;
-                _SpawnChild(block, last_pos);
-            }
-
-            last_pos.y += delta.y;
-            last_pos.x = start_pos.x;
+        while (location.HasNext) {
+            _SpawnChild(typeToSpawn.NextInstanceType(), location.NextPosition());
         }
 
         var total_bounds = new Bounds(Vector3.zero, Vector3.zero);

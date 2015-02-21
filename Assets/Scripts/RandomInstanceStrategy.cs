@@ -5,7 +5,9 @@ using System.Collections.Generic;
 public class RandomInstanceStrategy : InstanceStrategy {
     [Tooltip("List of possible prefabs to spawn.")]
     public List<Transform> typesToSpawn;
-    [Tooltip("A nonnegative value that increases the odds of spawning the same instance.")]
+
+    [Tooltip("Higher values increase the odds of spawning the same instance.")]
+    [Range(0, 100)]
     public int encourageRepetitionFactor = 1;
     
     
@@ -14,8 +16,6 @@ public class RandomInstanceStrategy : InstanceStrategy {
 
     void Awake() {
         rand = new Randomizer();
-
-        Dbg.Assert(encourageRepetitionFactor >= 0, "encourageRepetitionFactor must be nonnegative (greater than or equal to zero!");
     }
 
     public override Transform NextInstanceType() {

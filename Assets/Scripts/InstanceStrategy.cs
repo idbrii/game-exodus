@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public interface InstanceStrategy {
-    Transform NextInstanceType();
+public abstract class InstanceStrategy : MonoBehaviour {
+    public abstract Transform NextInstanceType();
 }
 

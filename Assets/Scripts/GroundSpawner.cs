@@ -5,8 +5,6 @@ using System.Collections.Generic;
 public class GroundSpawner : MonoBehaviour {
     [Tooltip("Boundary blocker object.")]
     public Transform boundary;
-    [Tooltip("List of possible ground tiles.")]
-    public List<Transform> groundBlocks;
     [Tooltip("Number of blocks high.")]
     public int height;
     [Tooltip("Number of blocks across.")]
@@ -14,15 +12,15 @@ public class GroundSpawner : MonoBehaviour {
     [Tooltip("The amount to overlap sprites.")]
     public Vector3 spriteOverlap;
     
-    private Randomizer rand;
+    private InstanceStrategy typeToSpawn;
     
     
     void Awake() {
-        rand = new Randomizer();
+        typeToSpawn = gameObject.GetComponent<InstanceStrategy>();
     }
 
     void Start() {
-        Transform default_block = groundBlocks[0];
+        Transform default_block = typeToSpawn.NextInstanceType();
         var delta = default_block.renderer.bounds.size;
         delta.z = 0;
         delta -= spriteOverlap;
@@ -34,12 +32,9 @@ public class GroundSpawner : MonoBehaviour {
 
         var last_pos = start_pos;
 
-        int last_block = 0;
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                last_block = _GetRandomBlock(last_block);
-
-                Transform block = groundBlocks[last_block];
+                Transform block = typeToSpawn.NextInstanceType();
                 last_pos.x += delta.x;
                 _SpawnChild(block, last_pos);
             }
@@ -84,12 +79,4 @@ public class GroundSpawner : MonoBehaviour {
         return child;
     }
 
-    int _GetRandomBlock(int last_block) {
-        int block = rand.Range(0, groundBlocks.Count + 1);
-        if (block >= groundBlocks.Count)
-        {
-            block = last_block;
-        }
-        return block;
-    }
 }

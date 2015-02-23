@@ -26,7 +26,7 @@ public class Spawner : MonoBehaviour {
         Quaternion rot = transform.rotation;
 
         for (int i = 0; i < numToSpawn; ++i) {
-            Vector3 pos = Vector3.Scale(pos_scale, location.NextPosition());
+            Vector3 pos = transform.position + Vector3.Scale(pos_scale, location.NextPosition());
             Transform obj = (Transform) Instantiate(typeToSpawn.NextInstanceType(), pos, rot);
             obj.parent = desiredParent;
         }

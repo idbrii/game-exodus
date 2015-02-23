@@ -2,32 +2,35 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CreatureControl : Mob
+public class CreatureControl : MonoBehaviour
 {
-	[Tooltip("How much time to stop trying to move.")]
-	public float movementReduceTime = 1;
-	
 	[Tooltip("How close is too close.")]
-	public float obstacleTooClose = 1;
-	public float creatureTooClose = 1;
+	public float obstacleTooClose = 2;
+	public float creatureTooClose = 2;
 
-	public float obstacleRepulsionMagnitude = 1;
-	public float creatureRepulsionMagnitude = 1;
-	public float cohesionMagnitude = 1;
-	public float alignmentMagnitude = 1;
-	public float maxMagnitude = 3;
+    [Range(1,250)]
+	public float obstacleRepulsionMagnitude = 50;
+    [Range(1,250)]
+	public float creatureRepulsionMagnitude = 10;
+    [Range(1,250)]
+	public float cohesionMagnitude = 5;
+    [Range(1,250)]
+	public float alignmentMagnitude = 20;
+    [Range(1,250)]
+	public float maxMagnitude = 50;
 
 	List<Transform> neighbouringCreatures = new List<Transform>();
 	List<Transform> obstacles = new List<Transform>();
 
+	Vector3 totalForce = Vector3.zero;
+
     void Awake()
     {
-
     }
 
     void Update()
     {
-		Vector3 totalForce = Vector3.zero;
+		totalForce = Vector3.zero;
 
 		if (obstacles.Count > 0)
 		{
@@ -63,12 +66,16 @@ public class CreatureControl : Mob
 		}
 
 		float magnitude = Mathf.Min(maxMagnitude, totalForce.magnitude);
-		totalForce = totalForce.normalized * magnitude;
+		totalForce.Normalize();
+		totalForce *= magnitude;
 
 		Debug.DrawRay(transform.position, totalForce);
-
-		UpdateMovement(totalForce.x, totalForce.y);
     }
+
+	void FixedUpdate()
+	{
+		rigidbody2D.AddForce(totalForce);
+	}
 
 	void getAverages(out Vector3 averagePosition, out Vector2 averageDirection)
 	{
@@ -87,15 +94,17 @@ public class CreatureControl : Mob
 
 	Vector3 getRepulsion(List<Transform> repulsors, float tooClose)
 	{
+		float sqrTooClose = Mathf.Pow(tooClose, 2.0f);
+
 		Vector3 sumRepulsion = new Vector3();
 
 		foreach (var repulsor in repulsors)
 		{
 			Vector3 awayVector = transform.position - repulsor.position;
 
-			if (awayVector.magnitude < tooClose)
+			if (awayVector.sqrMagnitude < sqrTooClose)
 			{
-				var scale = (tooClose - awayVector.magnitude) / tooClose;
+				var scale = (sqrTooClose - awayVector.sqrMagnitude) / sqrTooClose;
 				sumRepulsion += awayVector.normalized * scale;
 			}
 		}

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GridPositionStrategy : PositionStrategy {
+public class FixedGridPositionStrategy : PositionStrategy {
     [Tooltip("Number of blocks high.")]
     public int height = 10;
     [Tooltip("Number of blocks across.")]

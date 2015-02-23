@@ -16,7 +16,7 @@ public class GroundSpawner : Spawner {
         delta -= spriteOverlap;
         base.SpawnObjects(delta);
 
-        var total_bounds = new Bounds(Vector3.zero, Vector3.zero);
+        var total_bounds = new Bounds(transform.position, transform.position);
         var renderers = GetComponentsInChildren(typeof(Renderer));
         foreach (var component in renderers) {
             var render = (Renderer)component;

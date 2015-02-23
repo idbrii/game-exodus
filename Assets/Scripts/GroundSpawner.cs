@@ -2,27 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GroundSpawner : MonoBehaviour {
+public class GroundSpawner : Spawner {
     [Tooltip("Boundary blocker object.")]
     public Transform boundary;
+    [Tooltip("The amount to overlap sprites.")]
+    public Vector3 spriteOverlap;
     
-    private GridPositionStrategy location;
-    private InstanceStrategy typeToSpawn;
     
-    
-    void Awake() {
-        location = gameObject.GetComponent<GridPositionStrategy>();
-        typeToSpawn = gameObject.GetComponent<InstanceStrategy>();
-    }
-
     void Start() {
-        Transform default_block = typeToSpawn.NextInstanceType();
-        location.Initialize(default_block);
-        var delta = location.Delta;
-
-        while (location.HasNext) {
-            _SpawnChild(typeToSpawn.NextInstanceType(), location.NextPosition());
-        }
+        Transform sample_instance = typeToSpawn.NextInstanceType();
+        var delta = sample_instance.renderer.bounds.size;
+        delta.z = 0;
+        delta -= spriteOverlap;
+        base.SpawnObjects(delta);
 
         var total_bounds = new Bounds(Vector3.zero, Vector3.zero);
         var renderers = GetComponentsInChildren(typeof(Renderer));

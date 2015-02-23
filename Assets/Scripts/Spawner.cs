@@ -8,8 +8,8 @@ public class Spawner : MonoBehaviour {
     [Tooltip("Set this object as the parent of new objects.")]
     public Transform desiredParent;
 
-    private PositionStrategy location;
-    private InstanceStrategy typeToSpawn;
+    protected PositionStrategy location;
+    protected InstanceStrategy typeToSpawn;
     
     
     void Awake() {
@@ -19,14 +19,15 @@ public class Spawner : MonoBehaviour {
 
 
     void Start() {
-        SpawnObjects();
+        SpawnObjects(new Vector3(1.0f,1.0f,1.0f));
     }
 
-    void SpawnObjects() {
+    protected void SpawnObjects(Vector3 pos_scale) {
         Quaternion rot = transform.rotation;
 
         for (int i = 0; i < numToSpawn; ++i) {
-            Transform obj = (Transform) Instantiate(typeToSpawn.NextInstanceType(), location.NextPosition(), rot);
+            Vector3 pos = Vector3.Scale(pos_scale, location.NextPosition());
+            Transform obj = (Transform) Instantiate(typeToSpawn.NextInstanceType(), pos, rot);
             obj.parent = desiredParent;
         }
     }

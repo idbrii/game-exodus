@@ -7,19 +7,30 @@ public class FixedGridPositionStrategy : PositionStrategy {
     public int height = 10;
     [Tooltip("Number of blocks across.")]
     public int width = 10;
-    
-    private IEnumerator<Vector3> iter;
 
-    
+    private IEnumerator<Vector3> iter;
+    private bool hasNext = false;
+
+
     void Awake() {
         iter = CreateIterator();
-        // If we wanted to properly expose a "HasNext" value, we'd need to call
-        // MoveNext after creating the iter.
+        // To have a valid "hasNext" value, we need to call MoveNext after
+        // creating the iter.
+        MoveNext();
+    }
+
+    public override bool HasNext() {
+        return hasNext;
     }
 
     public override Vector3 NextPosition() {
-        iter.MoveNext();
-        return iter.Current;
+        var v = iter.Current;
+        MoveNext();
+        return v;
+    }
+
+    void MoveNext() {
+        hasNext = iter.MoveNext();
     }
 
     IEnumerator<Vector3> CreateIterator() {

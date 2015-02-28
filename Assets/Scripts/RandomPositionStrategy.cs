@@ -15,6 +15,11 @@ public class RandomPositionStrategy : PositionStrategy {
         rand = new Randomizer();
     }
 
+	public override bool HasNext() {
+		// We can randomly place forever.
+		return true;
+	}
+
     public override Vector3 NextPosition() {
         return rootObject.transform.position + GetSpawnOffset();
     }

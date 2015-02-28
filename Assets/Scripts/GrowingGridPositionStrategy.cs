@@ -7,16 +7,16 @@ public class GrowingGridPositionStrategy : PositionStrategy {
     private IEnumerator<Vector3> iter;
 
 
-	void Awake() {
-		iter = CreateIterator();
-		// If we wanted to properly expose a "HasNext" value, we'd need to call
-		// MoveNext after creating the iter.
-	}
+    void Awake() {
+        iter = CreateIterator();
+        // If we wanted to properly expose a "HasNext" value, we'd need to call
+        // MoveNext after creating the iter.
+    }
 
-	public override bool HasNext() {
-		// We can grow forever.
-		return true;
-	}
+    public override bool HasNext() {
+        // We can grow forever.
+        return true;
+    }
 
     public override Vector3 NextPosition() {
         iter.MoveNext();

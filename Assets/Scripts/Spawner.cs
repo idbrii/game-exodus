@@ -25,11 +25,10 @@ public class Spawner : MonoBehaviour {
     protected void SpawnObjects(Vector3 pos_scale) {
         Quaternion rot = transform.rotation;
 
-		for (int i = 0; i < numToSpawn && location.HasNext(); ++i) {
-			Vector3 pos = transform.position + Vector3.Scale(pos_scale, location.NextPosition());
-			Transform obj = (Transform) Instantiate(typeToSpawn.NextInstanceType(), pos, rot);
-			obj.parent = desiredParent;
-		}
-	}
-
+        for (int i = 0; i < numToSpawn && location.HasNext(); ++i) {
+            Vector3 pos = transform.position + Vector3.Scale(pos_scale, location.NextPosition());
+            Transform obj = (Transform) Instantiate(typeToSpawn.NextInstanceType(), pos, rot);
+            obj.parent = desiredParent;
+        }
+    }
 }

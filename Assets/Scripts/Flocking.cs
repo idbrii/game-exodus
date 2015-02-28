@@ -25,6 +25,13 @@ public class Flocking : MonoBehaviour
 
     Rigidbody2D body;
 
+    bool isEnabled = true;
+
+    public void SetFlocking(bool is_enabled)
+    {
+        isEnabled = is_enabled;
+    }
+
     void Awake()
     {
         body = rigidbody2D;
@@ -39,9 +46,18 @@ public class Flocking : MonoBehaviour
     void Update()
     {
         Dbg.Assert(repulsionMagnitude + cohesionMagnitude + alignmentMagnitude > 0, "Behavior is useless if no magnitude enabled.");
-        if (neighbours.Count == 0)
+        if (neighbours.Count == 0 || !isEnabled)
         {
             totalForce = Vector3.zero;
+
+            if (!isEnabled && enableDebugDraw)
+            {
+                var c = Color.black;
+                Debug.DrawRay(transform.position, Vector3.up, c);
+                Debug.DrawRay(transform.position, Vector3.down, c);
+                Debug.DrawRay(transform.position, Vector3.left, c);
+                Debug.DrawRay(transform.position, Vector3.right, c);
+            }
             return;
         }
 

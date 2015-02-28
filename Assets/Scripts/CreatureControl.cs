@@ -4,29 +4,42 @@ using System.Collections.Generic;
 
 public class CreatureControl : MonoBehaviour
 {
+    [Tooltip("Draw lines to indicate strength of forces (white is total force).")]
+    public bool enableDebugDraw = true;
+    
 	[Tooltip("How close is too close.")]
 	public float tooClose = 2;
 
-    [Range(1,250)]
+    [Range(0,250)]
 	public float repulsionMagnitude = 10;
-    [Range(1,250)]
+    [Range(0,250)]
 	public float cohesionMagnitude = 5;
-    [Range(1,250)]
+    [Range(0,250)]
 	public float alignmentMagnitude = 20;
     [Range(1,250)]
 	public float maxMagnitude = 50;
 
-	List<Transform> neighbouringCreatures = new List<Transform>();
+    List<Transform> neighbours = new List<Transform>();
 
 	Vector3 totalForce = Vector3.zero;
 
+    Rigidbody2D body;
+
     void Awake()
     {
+        body = rigidbody2D;
+        if (body == null)
+        {
+            // This will crash if we don't have a parent. CreatureControl needs
+            // a rigidbody to apply forces to.
+            body = transform.parent.rigidbody2D;
+        }
     }
 
     void Update()
     {
-		if (neighbouringCreatures.Count == 0)
+        Dbg.Assert(repulsionMagnitude + cohesionMagnitude + alignmentMagnitude > 0, "Behavior is useless if no magnitude enabled.");
+        if (neighbours.Count == 0)
 		{
             totalForce = Vector3.zero;
 			return;
@@ -50,15 +63,18 @@ public class CreatureControl : MonoBehaviour
 		float magnitude = Mathf.Min(maxMagnitude, totalForce.magnitude);
 		totalForce = totalForce.normalized * magnitude;
 
-		Debug.DrawRay(transform.position, repulsionForce, Color.red);
-		Debug.DrawRay(transform.position, towardCenterForce, Color.green);
-		Debug.DrawRay(transform.position, alignmentForce, Color.blue);
-		Debug.DrawRay(transform.position, totalForce);
+        if (enableDebugDraw)
+        {
+            Debug.DrawRay(transform.position, repulsionForce, Color.red);
+            Debug.DrawRay(transform.position, towardCenterForce, Color.green);
+            Debug.DrawRay(transform.position, alignmentForce, Color.blue);
+            Debug.DrawRay(transform.position, totalForce);
+        }
     }
 
 	void FixedUpdate()
 	{
-		rigidbody2D.AddForce(totalForce);
+		body.AddForce(totalForce);
 	}
 
 	void getAverages(out Vector3 averagePosition, out Vector2 averageDirection)
@@ -66,14 +82,14 @@ public class CreatureControl : MonoBehaviour
 		averagePosition = new Vector3();
 		averageDirection = new Vector2();
 
-		foreach (var creature in neighbouringCreatures)
+        foreach (var creature in neighbours)
 		{
 			averagePosition += creature.transform.position;
 			averageDirection += creature.rigidbody2D.velocity.normalized;
 		}
 
-		averagePosition /= neighbouringCreatures.Count;
-		averageDirection /= neighbouringCreatures.Count;
+        averagePosition /= neighbours.Count;
+        averageDirection /= neighbours.Count;
 	}
 
 	Vector3 getRepulsion()
@@ -82,7 +98,7 @@ public class CreatureControl : MonoBehaviour
 
 		Vector3 sumRepulsion = new Vector3();
 
-		foreach (var repulsor in neighbouringCreatures)
+        foreach (var repulsor in neighbours)
 		{
 			Vector3 awayVector = transform.position - repulsor.position;
 
@@ -98,20 +114,18 @@ public class CreatureControl : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        var creature = collider.gameObject.GetComponent<CreatureControl>();
-		if (creature != null)
+        if (collider.rigidbody2D != null)
         {
-			neighbouringCreatures.Add(creature.transform);
-		}
+            neighbours.Add(collider.transform);
+        }
     }
 
-	void OnTriggerExit2D(Collider2D collider)
-	{
-		var creature = collider.gameObject.GetComponent<CreatureControl>();
-		if (creature != null)
-		{
-			neighbouringCreatures.Remove(creature.transform);
-		}
-	}
+    void OnTriggerExit2D(Collider2D collider)
+    {
+        if (collider.rigidbody2D != null)
+        {
+            neighbours.Remove(collider.transform);
+        }
+    }
 }
 

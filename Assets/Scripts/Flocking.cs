@@ -47,6 +47,10 @@ public class Flocking : MonoBehaviour
 
     void Update()
     {
+        // Other systems might delete our game objects. Ensure we don't hold on
+        // to stale handles.
+        neighbours.RemoveAll(item => item == null);
+
         Dbg.Assert(repulsionMagnitude + cohesionMagnitude + alignmentMagnitude > 0, "Behavior is useless if no magnitude enabled.");
         if (neighbours.Count == 0 || !isEnabled)
         {

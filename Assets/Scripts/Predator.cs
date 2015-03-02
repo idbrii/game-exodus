@@ -81,21 +81,30 @@ public class Predator : MonoBehaviour
 
         if (is_hunting)
         {
+            // Since we're destroying objects we eat, we may find timing issues
+            // between when the object is added to Neighbours and when it's
+            // destroyed. Check to ensure it exists.
+            // TODO: Is there a better way to define our ordering so this
+            // doesn't occur? Is it possible for us to capture the object here
+            // and then lose it next frame?
             capturedPrey = preyVision.Neighbours[0];
-            Vector3 to_prey = capturedPrey.position - transform.position;
-            float sqr_distance_to_prey = to_prey.sqrMagnitude;
-            if (sqr_distance_to_prey < Mathf.Pow(minAttackDistance, 2.0f))
+            if (capturedPrey != null)
             {
-                // Attach it to me.
-                joint.connectedBody = capturedPrey.rigidbody2D;
-                joint.enabled = true;
-
-                foreach (var c in capturedPrey.GetComponentsInChildren<Flocking>())
+                Vector3 to_prey = capturedPrey.position - transform.position;
+                float sqr_distance_to_prey = to_prey.sqrMagnitude;
+                if (sqr_distance_to_prey < Mathf.Pow(minAttackDistance, 2.0f))
                 {
-                    c.SetFlocking(false);
-                }
+                    // Attach it to me.
+                    joint.connectedBody = capturedPrey.rigidbody2D;
+                    joint.enabled = true;
 
-                SwitchTo(State.GOT_FOOD);
+                    foreach (var c in capturedPrey.GetComponentsInChildren<Flocking>())
+                    {
+                        c.SetFlocking(false);
+                    }
+
+                    SwitchTo(State.GOT_FOOD);
+                }
             }
         }
         else
@@ -133,5 +142,9 @@ public class Predator : MonoBehaviour
     void FixedUpdate()
     {
         rigidbody2D.AddForce(totalForce);
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
     }
 }

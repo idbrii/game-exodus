@@ -3,11 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GroundSpawner : Spawner {
-    [Tooltip("Boundary blocker object.")]
+    [Header("Boundaries")]
+    public bool createLeftBoundary = true;
+    public bool createRightBoundary = true;
+    public bool createTopBoundary = true;
+    public bool createBottomBoundary = true;
+    [Tooltip("Object placed around the outside edge of spawned objects and sized to borders.")]
     public Transform boundary;
+
+    [Header("General")]
     [Tooltip("The amount to overlap sprites.")]
     public Vector3 spriteOverlap;
-    
+
     
     void Start() {
         Transform sample_instance = typeToSpawn.NextInstanceType();
@@ -27,16 +34,28 @@ public class GroundSpawner : Spawner {
             var size = new Vector2(delta.x, total_bounds.size.y);
             var pos = total_bounds.min;
             pos.y += total_bounds.size.y / 2.0f;
-            _SpawnBoundary(pos, size);
+            if (createLeftBoundary)
+            {
+                _SpawnBoundary(pos, size);
+            }
             pos.x += total_bounds.size.x;
-            _SpawnBoundary(pos, size);
+            if (createRightBoundary)
+            {
+                _SpawnBoundary(pos, size);
+            }
 
             size = new Vector2(total_bounds.size.x, delta.y);
             pos = total_bounds.min;
             pos.x += total_bounds.size.x / 2.0f;
-            _SpawnBoundary(pos, size);
+            if (createBottomBoundary)
+            {
+                _SpawnBoundary(pos, size);
+            }
             pos.y += total_bounds.size.y;
-            _SpawnBoundary(pos, size);
+            if (createTopBoundary)
+            {
+                _SpawnBoundary(pos, size);
+            }
         }
     }
 

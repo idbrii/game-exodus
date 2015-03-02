@@ -16,6 +16,12 @@ public class Predator : MonoBehaviour
     public Flocking enemyVision;
     [Tooltip("The area that we're hunting within.")]
     public Transform huntingGrounds;
+
+    // Using a Collider2D to make sure it's something that can fire
+    // OnCollisionExit2D.
+    [Tooltip("Collision where it's safe to eat.")]
+    public Collider2D safeToEatAreaCollision;
+    
     
     // Only public to allow viewState to be seen in editor.
     public enum State
@@ -31,6 +37,8 @@ public class Predator : MonoBehaviour
     private State currentState = State.HUNGRY;
 
     Vector3 totalForce = Vector3.zero;
+
+    bool isNearBorder = false;
 
     Transform capturedPrey;
 
@@ -117,7 +125,7 @@ public class Predator : MonoBehaviour
     void UpdateGotFood()
     {
         Vector3 away_from_centre = transform.position - huntingGrounds.transform.position;
-        if (away_from_centre.sqrMagnitude > Mathf.Pow(minDistanceFromCentreToEat, 2.0f))
+        if (isNearBorder)
         {
             SwitchTo(State.EATING);
         }
@@ -144,7 +152,19 @@ public class Predator : MonoBehaviour
         rigidbody2D.AddForce(totalForce);
     }
 
-    void OnTriggerEnter2D(Collider2D collider)
+    void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.CompareTag(safeToEatAreaCollision.gameObject.tag))
+        {
+            isNearBorder = true;
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag(safeToEatAreaCollision.gameObject.tag))
+        {
+            isNearBorder = false;
+        }
     }
 }

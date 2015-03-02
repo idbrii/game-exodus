@@ -4,11 +4,11 @@ using System.Collections;
 public class Predator : MonoBehaviour
 {
     [Tooltip("Minimum distance to attack prey.")]
-    public float minAttackDistance = 10.0f;
+    public float minAttackDistance = 1.5f;
     // TODO: Figure out if I'm at a boundary instead.
-    public float minDistanceFromCentreToEat = 10.0f;
+    public float minDistanceFromCentreToEat = 25.0f;
     [Tooltip("Magnitude of run force.")]
-    public float runMagnitude = 10.0f;
+    public float runMagnitude = 50.0f;
     
     [Tooltip("Flocking for attacking prey.")]
     public Flocking preyVision;
@@ -34,9 +34,13 @@ public class Predator : MonoBehaviour
 
     Transform capturedPrey;
 
+    DistanceJoint2D joint;
+
 
 	void Start()
     {
+        joint = GetComponent<DistanceJoint2D>();
+
         // To start, we only track prey and don't attack.
         SwitchTo(State.HUNGRY);
 	}
@@ -83,7 +87,13 @@ public class Predator : MonoBehaviour
             if (sqr_distance_to_prey < Mathf.Pow(minAttackDistance, 2.0f))
             {
                 // Attach it to me.
-                capturedPrey.parent = transform;
+                joint.connectedBody = capturedPrey.rigidbody2D;
+                joint.enabled = true;
+
+                foreach (var c in capturedPrey.GetComponentsInChildren<Flocking>())
+                {
+                    c.SetFlocking(false);
+                }
 
                 SwitchTo(State.GOT_FOOD);
             }
@@ -114,6 +124,8 @@ public class Predator : MonoBehaviour
         // TODO: Defer this for a bit.
         Object.Destroy(capturedPrey.gameObject);
         capturedPrey = null;
+        joint.enabled = false;
+        joint.connectedBody = null;
 
         SwitchTo(State.HUNGRY);
     }

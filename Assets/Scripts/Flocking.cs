@@ -19,6 +19,8 @@ public class Flocking : MonoBehaviour
     [Range(1,250)]
     public float maxMagnitude = 50;
 
+    public List<Transform> Neighbours { get { return neighbours; } }
+
     List<Transform> neighbours = new List<Transform>();
 
     Vector3 totalForce = Vector3.zero;

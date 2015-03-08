@@ -18,7 +18,7 @@ public class GroundSpawner : Spawner {
     
     void Start() {
         Transform sample_instance = typeToSpawn.NextInstanceType();
-        var delta = sample_instance.renderer.bounds.size;
+        var delta = sample_instance.GetComponent<Renderer>().bounds.size;
         delta.z = 0;
         delta -= spriteOverlap;
         base.SpawnObjects(delta);

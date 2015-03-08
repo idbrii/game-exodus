@@ -36,12 +36,12 @@ public class Flocking : MonoBehaviour
 
     void Awake()
     {
-        body = rigidbody2D;
+        body = GetComponent<Rigidbody2D>();
         if (body == null)
         {
             // This will crash if we don't have a parent. Flocking needs
             // a rigidbody to apply forces to.
-            body = transform.parent.rigidbody2D;
+            body = transform.parent.GetComponent<Rigidbody2D>();
         }
     }
 
@@ -107,7 +107,7 @@ public class Flocking : MonoBehaviour
         foreach (var creature in neighbours)
         {
             averagePosition += creature.transform.position;
-            averageDirection += creature.rigidbody2D.velocity.normalized;
+            averageDirection += creature.GetComponent<Rigidbody2D>().velocity.normalized;
         }
 
         averagePosition /= neighbours.Count;
@@ -136,7 +136,7 @@ public class Flocking : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.rigidbody2D != null)
+        if (collider.GetComponent<Rigidbody2D>() != null)
         {
             neighbours.Add(collider.transform);
         }
@@ -144,7 +144,7 @@ public class Flocking : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        if (collider.rigidbody2D != null)
+        if (collider.GetComponent<Rigidbody2D>() != null)
         {
             neighbours.Remove(collider.transform);
         }

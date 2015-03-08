@@ -103,7 +103,7 @@ public class Predator : MonoBehaviour
                 if (sqr_distance_to_prey < Mathf.Pow(minAttackDistance, 2.0f))
                 {
                     // Attach it to me.
-                    joint.connectedBody = capturedPrey.rigidbody2D;
+                    joint.connectedBody = capturedPrey.GetComponent<Rigidbody2D>();
                     joint.enabled = true;
 
                     foreach (var c in capturedPrey.GetComponentsInChildren<Flocking>())
@@ -149,7 +149,7 @@ public class Predator : MonoBehaviour
 
     void FixedUpdate()
     {
-        rigidbody2D.AddForce(totalForce);
+        GetComponent<Rigidbody2D>().AddForce(totalForce);
     }
 
     void OnCollisionEnter2D(Collision2D collision)

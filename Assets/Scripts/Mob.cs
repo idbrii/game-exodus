@@ -18,7 +18,7 @@ public class Mob : MonoBehaviour
 
     void FixedUpdate()
     {
-        rigidbody2D.velocity = movement;
+        GetComponent<Rigidbody2D>().velocity = movement;
     }
 }
 

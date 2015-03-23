@@ -8,24 +8,28 @@ public class Equation : MonoBehaviour {
     public Expression lhs;
     [Tooltip("The Expression for the right-hand side.")]
     public Expression rhs;
+    [Tooltip("Where the objects we're counting come from.")]
+    public Spawner source;
 
 
-    public bool IsEqual
+    bool IsEqual()
     {
-        get
-        {
-            return lhs.ContainedValue == rhs.ContainedValue;
-        }
+        return lhs.ContainedValue == rhs.ContainedValue;
+    }
+
+    bool IsUsingAllCreatures()
+    {
+        return (lhs.ContainedValue * 2) == source.numToSpawn;
     }
     
-
-    void Start()
+    bool IsSatisfied()
     {
+        return IsEqual() && IsUsingAllCreatures();
     }
-
+    
     void Update()
     {
-        if (IsEqual)
+        if (IsSatisfied())
         {
             // The expression must have an output for the operator.
             foreach (var t in GetComponentsInChildren<Text>())

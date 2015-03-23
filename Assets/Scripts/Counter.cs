@@ -2,13 +2,13 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class Counter : MonoBehaviour {
+public class Counter : Expression {
 
     // public so we can see the count when debugging.
     [Tooltip("DO NOT EDIT: The number of items inside.")]
     public int count = 0;
 
-    public int ContainedCount { get { return count; } }
+    override public int ContainedValue { get { return count; } }
 
     Text counterDisplay;
 

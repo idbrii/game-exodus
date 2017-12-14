@@ -9,7 +9,7 @@ public class Mob : MonoBehaviour
     private Vector2 movement;
 
 
-    protected void UpdateMovement(float inputX, float inputY)
+    protected virtual void UpdateMovement(float inputX, float inputY)
     {
         movement = new Vector2(
                 speed.x * inputX,

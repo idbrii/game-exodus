@@ -1,0 +1,6 @@
+I think Exodus was a game about herding sheep
+
+Exodus doesn't import properly into recent version of Unity (5.3.4).
+
+I think you were repulsive and used that to guide sheep into pens. Maybe you
+had to hit a specific quantity?
